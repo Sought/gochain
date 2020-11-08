@@ -1,0 +1,31 @@
+version: '3.6'
+
+networks:
+  cont_net:
+
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+    networks:
+      - "cont_net"
+    volumes:
+      - "/var/lib/postgresql/data"
+
+  goapp:
+    image: app_image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PORT: 8000
+      IP: 0.0.0.0
+      POSTGRES_URL: 'database'
+      POSTGRES_PASSWORD: password
+    ports:
+      - 8000:8000
+    depends_on:
+      - 'database'
+    networks:
+      - 'cont_net'
